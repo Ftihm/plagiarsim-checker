@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plagiarism Checker - Prepostseo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f4f4;
+    color: #333;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR ── */
+  .navbar {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0 20px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    margin-right: 30px;
+    flex-shrink: 0;
+  }
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .logo-text {
+    font-size: 18px;
+    font-weight: 900;
+    color: #111;
+    letter-spacing: -0.5px;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0 14px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: #3dbfa0; }
+  .nav-badge {
+    background: #3dbfa0;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    line-height: 14px;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .nav-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    font-size: 16px;
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+  }
+  .nav-chat-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chat-dot {
+    width: 7px; height: 7px;
+    background: #3dbfa0;
+    border-radius: 50%;
+  }
+  .btn-premium {
+    background: #3dbfa0;
+    color: #fff;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-account, .btn-logout {
+    background: #111;
+    color: #fff;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 30px 16px 40px;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+  }
+  .page-subtitle {
+    text-align: center;
+    color: #555;
+    font-size: 13px;
+    margin-bottom: 22px;
+  }
+
+  /* ── TOP CARD ── */
+  .top-card {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .input-area {
+    flex: 1;
+    background: #fff;
+    border: 1.5px solid #c2e8e0;
+    border-radius: 6px;
+    padding: 0;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .textarea-wrap {
+    flex: 1;
+    position: relative;
+    min-height: 160px;
+  }
+  #main-textarea {
+    width: 100%;
+    height: 100%;
+    min-height: 160px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    padding: 14px 14px 0 14px;
+    background: transparent;
+  }
+  .upload-placeholder {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+  .upload-placeholder.hidden { opacity: 0; }
+  .upload-icon {
+    width: 60px; height: 60px;
+    opacity: 0.18;
+  }
+  .placeholder-text {
+    color: #aaa;
+    font-size: 15px;
+    font-weight: 400;
+  }
+  .upload-btn {
+    pointer-events: all;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .upload-btn:hover { background: #f5f5f5; }
+
+  .input-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px 14px;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .word-count {
+    font-size: 12px;
+    color: #888;
+    align-self: flex-start;
+  }
+  .btn-check {
+    background: #3dbfa0;
+    color: #fff;
+    border: none;
+    padding: 10px 36px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: background 0.15s;
+  }
+  .btn-check:hover { background: #35aa8e; }
+
+  /* ── UPGRADE SIDEBAR ── */
+  .upgrade-card {
+    width: 268px;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, #4dcfae 0%, #3dbfa0 40%, #2a8fa8 100%);
+    border-radius: 6px;
+    padding: 20px 18px 22px;
+    color: #fff;
+  }
+  .upgrade-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .crown-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .upgrade-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .upgrade-list {
+    list-style: none;
+    margin-bottom: 18px;
+  }
+  .upgrade-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 5px 0;
+  }
+  .check-circle {
+    width: 18px; height: 18px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .check-circle::after {
+    content: '✓';
+    font-size: 11px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn-gopro {
+    width: 100%;
+    background: #3dbfa0;
+    color: #fff;
+    border: none;
+    padding: 11px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-gopro:hover { background: #35aa8e; }
+
+  /* ── RESULT SECTION ── */
+  .result-section {
+    margin-top: 30px;
+    display: none;
+  }
+  .result-section.visible { display: block; }
+  .result-heading {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 14px;
+  }
+  .result-layout {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  /* Left text panel */
+  .result-text-panel {
+    flex: 1;
+    background: #fff;
+    border-radius: 6px;
+    border-top: 3px solid #3dbfa0;
+    padding: 18px 20px;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #222;
+  }
+  .result-text-panel p + p {
+    margin-top: 12px;
+  }
+
+  /* Right result panel */
+  .result-panel {
+    width: 310px;
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 6px;
+    border-top: 3px solid #3dbfa0;
+    padding: 20px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Donut chart */
+  .donut-wrap {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .donut-svg {
+    width: 120px;
+    height: 120px;
+    transform: rotate(-90deg);
+  }
+  .donut-bg {
+    fill: none;
+    stroke: #e8e8e8;
+    stroke-width: 13;
+  }
+  .donut-fill {
+    fill: none;
+    stroke: #6dbf8a;
+    stroke-width: 13;
+    stroke-linecap: butt;
+    stroke-dasharray: 263.9; /* circumference for r=42 */
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.8s ease;
+  }
+
+  .result-stats {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+  }
+  .stat-item { text-align: center; }
+  .stat-pct {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .stat-pct.red { color: #d9534f; }
+  .stat-pct.green { color: #5cb85c; }
+  .stat-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-top: 3px;
+  }
+  .stat-label.red { color: #d9534f; }
+  .stat-label.green { color: #5cb85c; }
+
+  /* Buttons: full width, 3 equal black cols */
+  .result-btn-row {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .result-action-btn {
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 11px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    line-height: 1.35;
+  }
+  .result-action-btn:hover { background: #2a2a2a; }
+
+  .matches-divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 14px 0 8px;
+  }
+  .matches-count {
+    text-align: right;
+    width: 100%;
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 8px;
+  }
+  .show-matches {
+    font-size: 12.5px;
+    color: #555;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* ── TABLE OF CONTENTS CARD ── */
+  .bottom-card {
+    margin-top: 28px;
+    background: #fff;
+    border-radius: 6px;
+    padding: 24px 28px;
+    display: flex;
+    gap: 40px;
+  }
+  .toc-col h3, .helpful-col h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 12px;
+  }
+  .toc-col ul {
+    list-style: none;
+  }
+  .toc-col ul li {
+    margin-bottom: 6px;
+  }
+  .toc-col ul li a {
+    color: #3dbfa0;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .toc-col ul li a:hover { text-decoration: underline; }
+  .helpful-col {
+    flex-shrink: 0;
+  }
+  .radio-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 10px;
+    align-items: center;
+    font-size: 13px;
+  }
+  .radio-row label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+  .improve-label { font-size: 13px; color: #333; margin-bottom: 6px; }
+  .improve-textarea {
+    width: 240px;
+    height: 60px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    padding: 6px 8px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: #333;
+    outline: none;
+  }
+  .improve-textarea:focus { border-color: #3dbfa0; }
+
+  /* ── CLOSE NOTICE ── */
+  .close-notice {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 32px; height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: none;
+  }
+
+  @media (max-width: 760px) {
+    .top-card, .result-layout { flex-direction: column; }
+    .upgrade-card, .result-panel { width: 100%; }
+    .bottom-card { flex-direction: column; gap: 20px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="logo" href="#">
+    <svg class="logo-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,28 14,0 28,28" fill="#3dbfa0"/>
+      <polygon points="6,28 14,12 22,28" fill="#fff" opacity="0.35"/>
+    </svg>
+    <span class="logo-text">PREPOSTSEO</span>
+  </a>
+  <div class="nav-links">
+    <a href="#">Plagiarism Checker</a>
+    <a href="#">DA Checker</a>
+    <a href="#">Paraphrasing</a>
+    <a href="#">Summarizer</a>
+    <a href="#">Essay Writer</a>
+    <a href="#">Image To Text</a>
+    <a href="#">Humanizer <span class="nav-badge">NEW</span></a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-icon-btn" title="Search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <button class="nav-icon-btn" title="Dark mode">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button class="nav-chat-btn">Chat <span class="chat-dot"></span></button>
+    <button class="btn-premium">Premium</button>
+    <button class="btn-account">Account</button>
+    <button class="btn-logout">Logout</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <h1 class="page-title">Plagiarism Checker</h1>
+  <p class="page-subtitle">Prepostseo's plagiarism checker detects duplicate or copied content from your documents and shows the percentage of plagiarism along with the source.</p>
+
+  <!-- Top card: textarea + upgrade -->
+  <div class="top-card">
+    <div class="input-area">
+      <div class="textarea-wrap">
+        <textarea id="main-textarea" spellcheck="false" oninput="onInput()"></textarea>
+        <div class="upload-placeholder" id="placeholder">
+          <svg class="upload-icon" viewBox="0 0 60 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="46" height="58" rx="4" ry="4" fill="#aaa"/>
+            <rect x="8" y="12" width="30" height="4" rx="2" fill="#fff" opacity="0.7"/>
+            <rect x="8" y="22" width="30" height="4" rx="2" fill="#fff" opacity="0.7"/>
+            <rect x="8" y="32" width="20" height="4" rx="2" fill="#fff" opacity="0.7"/>
+            <circle cx="42" cy="52" r="14" fill="#3dbfa0"/>
+            <path d="M42 46 L42 58 M36 52 L48 52" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span class="placeholder-text">Enter Or Paste Your Text Here</span>
+          <button class="upload-btn" onclick="triggerUpload()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload
+          </button>
+        </div>
+      </div>
+      <div class="input-footer">
+        <span class="word-count" id="word-count"></span>
+        <button class="btn-check" onclick="checkPlagiarism()">Check Plagiarism</button>
+      </div>
+    </div>
+
+    <div class="upgrade-card">
+      <div class="upgrade-header">
+        <span class="crown-icon">👑</span>
+        <span class="upgrade-title">Upgrade Level</span>
+      </div>
+      <ul class="upgrade-list">
+        <li><span class="check-circle"></span> Deep Search</li>
+        <li><span class="check-circle"></span> No Ads</li>
+        <li><span class="check-circle"></span> Support</li>
+        <li><span class="check-circle"></span> Accurate Reports</li>
+        <li><span class="check-circle"></span> Check Upto 25,000 Words</li>
+      </ul>
+      <button class="btn-gopro">Go Pro</button>
+    </div>
+  </div>
+
+  <!-- Result section -->
+  <div class="result-section" id="result-section">
+    <h2 class="result-heading">Plagiarism Result</h2>
+    <div class="result-layout">
+      <!-- Left: text display -->
+      <div class="result-text-panel" id="result-text"></div>
+
+      <!-- Right: score panel -->
+      <div class="result-panel">
+        <!-- Donut -->
+        <div class="donut-wrap">
+          <svg class="donut-svg" viewBox="0 0 110 110">
+            <circle class="donut-bg" cx="55" cy="55" r="42"/>
+            <circle class="donut-fill" id="donut-fill" cx="55" cy="55" r="42"/>
+          </svg>
+        </div>
+
+        <div class="result-stats">
+          <div class="stat-item">
+            <div class="stat-pct red" id="pct-plagiarized">0%</div>
+            <div class="stat-label red">Plagiarized<br>Content</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-pct green" id="pct-unique">100%</div>
+            <div class="stat-label green">Unique<br>Content</div>
+          </div>
+        </div>
+
+        <div class="result-btn-row">
+          <button class="result-action-btn">Humanize<br>Text</button>
+          <button class="result-action-btn">Remove<br>Plagiarism</button>
+          <button class="result-action-btn">Download<br>Report</button>
+        </div>
+
+        <hr class="matches-divider">
+        <div class="matches-count">0 Matches</div>
+        <div class="show-matches">[ + ] Show All Matches</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom card: TOC + helpful -->
+  <div class="bottom-card">
+    <div class="toc-col">
+      <h3>Table of Contents</h3>
+      <ul>
+        <li><a href="#">Free Plagiarism Checker</a></li>
+        <li><a href="#">What is Plagiarism?</a></li>
+        <li><a href="#">How Does Our Plagiarism Checker Work?</a></li>
+        <li><a href="#">Why Use Our Tool?</a></li>
+        <li><a href="#">Features of Plagiarism Checker</a></li>
+      </ul>
+    </div>
+    <div class="helpful-col">
+      <h3>Is this tool helpful?</h3>
+      <div class="radio-row">
+        <label><input type="radio" name="helpful" checked> Yes</label>
+        <label><input type="radio" name="helpful"> No</label>
+      </div>
+      <div class="improve-label">How can we improve it?</div>
+      <textarea class="improve-textarea" placeholder=""></textarea>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-input" style="display:none" accept=".txt,.doc,.docx" onchange="handleFile(event)">
+
+<script>
+  const textarea = document.getElementById('main-textarea');
+  const placeholder = document.getElementById('placeholder');
+  const wordCount = document.getElementById('word-count');
+  const resultSection = document.getElementById('result-section');
+  const resultText = document.getElementById('result-text');
+
+  function onInput() {
+    const val = textarea.value;
+    if (val.trim().length > 0) {
+      placeholder.classList.add('hidden');
+      const words = val.trim().split(/\s+/).filter(w => w.length > 0).length;
+      wordCount.textContent = `Words: ${words} / 1000`;
+    } else {
+      placeholder.classList.remove('hidden');
+      wordCount.textContent = '';
+    }
+  }
+
+  function triggerUpload() {
+    document.getElementById('file-input').click();
+  }
+
+  function handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      textarea.value = ev.target.result;
+      onInput();
+    };
+    reader.readAsText(file);
+  }
+
+  function checkPlagiarism() {
+    const val = textarea.value.trim();
+    if (!val) {
+      alert('Please enter or paste some text first.');
+      return;
+    }
+
+    // Render result text (split into paragraphs)
+    const paras = val.split(/\n\n+/).filter(p => p.trim());
+    if (paras.length === 0) paras.push(val);
+    resultText.innerHTML = paras.map(p => `<p>${escHtml(p.trim())}</p>`).join('');
+
+    // Show section
+    resultSection.classList.add('visible');
+
+    // Always 100% unique, 0% plagiarized
+    document.getElementById('pct-plagiarized').textContent = '0%';
+    document.getElementById('pct-unique').textContent = '100%';
+
+    // Donut: fully green stroke, no offset
+    const fill = document.getElementById('donut-fill');
+    fill.style.strokeDashoffset = '0';
+    fill.style.stroke = '#6dbf8a';
+
+    // Scroll to result
+    setTimeout(() => {
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
+  function escHtml(str) {
+    return str
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
